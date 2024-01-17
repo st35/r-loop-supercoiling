@@ -819,7 +819,7 @@ void Gillespie_Simulation_Multiple_Genes(double force, int restartflag, int brut
 		else if(s_R == 1)
 		{
 			R[numgenes + 2 + 2*Nucl.size() + numgenes + 2*Barr.size() + 2*GapR_Points.size()] = 0.0;
-			R[numgenes + 2 + 2*Nucl.size() + numgenes + 2*Barr.size() + 2*GapR_Points.size() + 1] = s_R*(k_off_R*(1.0 - s_G) + s_G*k_off_eR);
+			R[numgenes + 2 + 2*Nucl.size() + numgenes + 2*Barr.size() + 2*GapR_Points.size() + 1] = (1.0 - s_eR)*s_R*(k_off_R*(1.0 - s_G) + s_G*k_off_eR);
 		}
 		else
 		{
@@ -1253,7 +1253,7 @@ void Gillespie_Simulation_Multiple_Genes(double force, int restartflag, int brut
 		else if(s_R == 1)
 		{
 			R[numgenes + 2 + 2*Nucl.size() + numgenes + 2*Barr.size() + 2*GapR_Points.size()] = 0.0;
-			R[numgenes + 2 + 2*Nucl.size() + numgenes + 2*Barr.size() + 2*GapR_Points.size() + 1] = s_R*(k_off_R*(1.0 - s_G) + s_G*k_off_eR);
+			R[numgenes + 2 + 2*Nucl.size() + numgenes + 2*Barr.size() + 2*GapR_Points.size() + 1] = (1.0 - s_eR)*s_R*(k_off_R*(1.0 - s_G) + s_G*k_off_eR);
 		}
 		else
 		{
