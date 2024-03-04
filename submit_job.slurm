@@ -10,6 +10,6 @@
 module load gcc/10.1.0
 module load openmpi/4.0.5-skylake-gcc10.1
 
-mpirun ./Run_Simulation $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12}
+mpirun ./Run_Simulation $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13} ${14}
 
 echo $SLURM_JOB_NODELIST

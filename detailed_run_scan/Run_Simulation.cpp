@@ -33,7 +33,7 @@ void Read_Setup(std::string filename, std::vector<double> &gene_lengths, std::ve
 	return;
 }
 
-void Run_Simulation(std::string filename, int plasmid_flag, int promoter_flag, int GQ_on_id, double GQ_on_val, int eR_on_id, double eR_on_val, int topo_id, double topo_val, int PQS_flag, int world_rank, int start_rank, int restartflag)
+void Run_Simulation(std::string filename, int plasmid_flag, int promoter_flag, int GQ_on_id, double GQ_on_val, int eR_on_id, double eR_on_val, int topo_id, double topo_val, int eR_off_id, double eR_off_val, int PQS_flag, int world_rank, int start_rank, int restartflag)
 {
 	double force = 1.0;
 	int torque_flag = 0;
@@ -104,9 +104,10 @@ void Run_Simulation(std::string filename, int plasmid_flag, int promoter_flag, i
 
 	myong_k_on_G = GQ_on_val / 60.0;
 	myong_k_on_eR = eR_on_val / 60.0;
+	myong_k_off_eR = eR_off_val / 60.0;
 
-	std::string outputfolder = "outputfiles/RUN_" + std::to_string(plasmid_flag) + "_" + std::to_string(promoter_flag) + "_" + std::to_string(GQ_on_id) + "_" + std::to_string(eR_on_id) + "_" + std::to_string(topo_id) + "_" + std::to_string(PQS_flag);
-	std::string inputfolder = "inputfiles/RUN_" + std::to_string(plasmid_flag) + "_" + std::to_string(promoter_flag) + "_" + std::to_string(GQ_on_id) + "_" + std::to_string(eR_on_id) + "_" + std::to_string(topo_id) + "_" + std::to_string(PQS_flag);
+	std::string outputfolder = "outputfiles/RUN_" + std::to_string(plasmid_flag) + "_" + std::to_string(promoter_flag) + "_" + std::to_string(GQ_on_id) + "_" + std::to_string(eR_on_id) + "_" + std::to_string(topo_id) + "_" + std::to_string(eR_off_id) + "_" + std::to_string(PQS_flag);
+	std::string inputfolder = "inputfiles/RUN_" + std::to_string(plasmid_flag) + "_" + std::to_string(promoter_flag) + "_" + std::to_string(GQ_on_id) + "_" + std::to_string(eR_on_id) + "_" + std::to_string(topo_id) + "_" + std::to_string(eR_off_id) + "_" + std::to_string(PQS_flag);
 
 	Gillespie_Simulation_Multiple_Genes(force, restartflag, brute_force_flag, torque_flag, gene_lengths, TSSes, Gene_Directions, clamp0_flag, clamp1_flag, T, finish_count_limit, promoters, topoisomerase, rna_degrad, barrier_on, barrier_off, barrier, nucl_par, PQS_flag, fileflag, outputfolder, inputfolder, world_rank + start_rank, single_pol_II_flag, nucl_file_flag);
 
@@ -131,14 +132,16 @@ int main(int argc, char *argv[])
 	double eR_on_val = std::stod(argv[8]);
 	int topo_id = std::stoi(argv[9]);
 	double topo_val = std::stod(argv[10]);
-	int PQS_flag = std::stoi(argv[11]);
-	int start_rank = std::stoi(argv[12]);
+	int eR_off_id = std::stoi(argv[11]);
+	double eR_off_val = std::stod(argv[12]);
+	int PQS_flag = std::stoi(argv[13]);
+	int start_rank = std::stoi(argv[14]);
 
-	generator = std::mt19937(std::time(NULL) + plasmid_flag + promoter_flag + GQ_on_id + eR_on_id + topo_id + PQS_flag + world_rank + start_rank);
+	generator = std::mt19937(std::time(NULL) + plasmid_flag + promoter_flag + GQ_on_id + eR_on_id + topo_id + eR_off_id + PQS_flag + world_rank + start_rank);
 
 	try
 	{
-		Run_Simulation(filename, plasmid_flag, promoter_flag, GQ_on_id, GQ_on_val, eR_on_id, eR_on_val, topo_id, topo_val, PQS_flag, world_rank, start_rank, restartflag);
+		Run_Simulation(filename, plasmid_flag, promoter_flag, GQ_on_id, GQ_on_val, eR_on_id, eR_on_val, topo_id, topo_val, eR_off_id, eR_off_val, PQS_flag, world_rank, start_rank, restartflag);
 	}
 	catch(const std::invalid_argument &e)
 	{

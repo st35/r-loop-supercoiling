@@ -1713,7 +1713,7 @@ struct odesystem
 		}
 		else if(s_R == 1)
 		{
-			insprop += (1.0 - s_eR)*s_R*(k_off_R*(1.0 - s_G) + s_G*k_off_eR); // R-loop dissolution
+			insprop += s_R*(k_off_R*(1.0 - s_G) + s_G*k_off_eR); // R-loop dissolution
 		}
 		else
 		{

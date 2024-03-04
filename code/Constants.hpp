@@ -18,7 +18,7 @@ int circular_plasmid_flag = 1;
 double GQ_spacer = 30.0*0.34; // 30 bp from TSS
 double sigma_basal = 0.0;
 double myong_k_0 = 0.0, myong_s_0 = 0.0; // Inputs for the k_on function
-double myong_k_on_G = 1.0, myong_k_on_eR = 1.0;
+double myong_k_on_G = 1.0, myong_k_on_eR = 1.0, myong_k_off_eR = 0.0;
 
 double clamp0 = -1.0, clamp1 = -1.0;
 double clamp0_sigma = 0.0, clamp1_sigma = 0.0;

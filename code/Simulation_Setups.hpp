@@ -140,7 +140,7 @@ void Gillespie_Simulation_Multiple_Genes(double force, int restartflag, int brut
 
 	double k_off_R = 1.0;
 	double k_off_G = 0.0;
-	double k_off_eR = 0.0;
+	double k_off_eR = myong_k_off_eR;
 
 	barrier = 0.34*barrier;
 	clamp0 = 0.0;
@@ -523,7 +523,7 @@ void Gillespie_Simulation_Multiple_Genes(double force, int restartflag, int brut
 
 	int exitflag = 0;
 
-	std::ofstream alive_file, x_file, phi_file, velocity_file, angular_v_file, segments_file, sigma_file, torque_file, nucl_status_file, barr_status_file, barr_phi_file, nucl_pos_file, barr_pos_file, event_file, gapr_pos_file, gapr_file, nucl_type_file, rnap_density_file, rnap_segments_pos_file, spot_sigma_file, myong_file, sua_file;
+	std::ofstream alive_file, x_file, phi_file, velocity_file, angular_v_file, segments_file, sigma_file, torque_file, nucl_status_file, barr_status_file, barr_phi_file, nucl_pos_file, barr_pos_file, event_file, gapr_pos_file, gapr_file, nucl_type_file, rnap_density_file, rnap_segments_pos_file, spot_sigma_file, myong_file, sua_file, synced_x_file, synced_sigma_file, synced_segments_file;
 
 	event_file.open(outputfolder + "/event_" + std::to_string(world_rank) + ".log");
 
@@ -541,6 +541,10 @@ void Gillespie_Simulation_Multiple_Genes(double force, int restartflag, int brut
 		barr_status_file.open(outputfolder + "/barr_status_" + std::to_string(world_rank) + ".log");
 		barr_phi_file.open(outputfolder + "/barr_phi_" + std::to_string(world_rank) + ".log");
 		myong_file.open(outputfolder + "/myong_" + std::to_string(world_rank) + ".log");
+
+		synced_x_file.open(outputfolder + "/synced_x_" + std::to_string(world_rank) + ".log");
+		synced_sigma_file.open(outputfolder + "/synced_sigma_" + std::to_string(world_rank) + ".log");
+		synced_segments_file.open(outputfolder + "/synced_segments_" + std::to_string(world_rank) + ".log");
 	}
 	sua_file.open(outputfolder + "/sua_" + std::to_string(world_rank) + ".log");
 	if(restartflag == 0 && world_rank == 0)
@@ -819,7 +823,7 @@ void Gillespie_Simulation_Multiple_Genes(double force, int restartflag, int brut
 		else if(s_R == 1)
 		{
 			R[numgenes + 2 + 2*Nucl.size() + numgenes + 2*Barr.size() + 2*GapR_Points.size()] = 0.0;
-			R[numgenes + 2 + 2*Nucl.size() + numgenes + 2*Barr.size() + 2*GapR_Points.size() + 1] = (1.0 - s_eR)*s_R*(k_off_R*(1.0 - s_G) + s_G*k_off_eR);
+			R[numgenes + 2 + 2*Nucl.size() + numgenes + 2*Barr.size() + 2*GapR_Points.size() + 1] = s_R*(k_off_R*(1.0 - s_G) + s_G*k_off_eR);
 		}
 		else
 		{
@@ -1253,7 +1257,7 @@ void Gillespie_Simulation_Multiple_Genes(double force, int restartflag, int brut
 		else if(s_R == 1)
 		{
 			R[numgenes + 2 + 2*Nucl.size() + numgenes + 2*Barr.size() + 2*GapR_Points.size()] = 0.0;
-			R[numgenes + 2 + 2*Nucl.size() + numgenes + 2*Barr.size() + 2*GapR_Points.size() + 1] = (1.0 - s_eR)*s_R*(k_off_R*(1.0 - s_G) + s_G*k_off_eR);
+			R[numgenes + 2 + 2*Nucl.size() + numgenes + 2*Barr.size() + 2*GapR_Points.size() + 1] = s_R*(k_off_R*(1.0 - s_G) + s_G*k_off_eR);
 		}
 		else
 		{
@@ -1602,9 +1606,31 @@ void Gillespie_Simulation_Multiple_Genes(double force, int restartflag, int brut
 //		event_file << t << " "  << event << " " << Nucl.size() << " " << Barr.size() << "\n";
 		event_file << t << " "  << event << "\n";
 
+		synced_x_file << t << "\t";
+		for(int i = 0; i < allx.size(); i++)
+		{
+			synced_x_file << allx[i] << "\t";
+		}
+		synced_x_file << "\n";
+
+		synced_sigma_file << t << "\t";
+		for(int i = 0; i < Sigma.size(); i++)
+		{
+			synced_sigma_file << Sigma[i] << "\t";
+		}
+		synced_sigma_file << "\n";
+
+		synced_segments_file << t << "\t";
+		for(int i = 0; i < Segments.size(); i++)
+		{
+			synced_segments_file << Segments[i] << "\t";
+		}
+		synced_segments_file << "\n";
+
+		sua_file << t << "\t" << s_R << "\t" << s_G << "\t" << s_eR << "\n";
+
 		if(t - last_write_time > write_interval)
 		{
-			sua_file << t << "\t" << s_R << "\t" << s_G << "\t" << s_eR << "\n";
 			if(galactose_switch == 1)
 			{
 				gapr_file << t << "\t";
@@ -1819,6 +1845,9 @@ void Gillespie_Simulation_Multiple_Genes(double force, int restartflag, int brut
 		rnap_density_file.close();
 	}
 	sua_file.close();
+	synced_x_file.close();
+	synced_sigma_file.close();
+	synced_segments_file.close();
 
 	return;
 }
