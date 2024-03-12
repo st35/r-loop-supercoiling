@@ -740,6 +740,29 @@ void Gillespie_Simulation_Multiple_Genes(double force, int restartflag, int brut
 		Get_GapR_RNAP_Map_Pairwise(GapR_Points, allx, map_gapr, delta);
 		Is_GapR_Blocked = Find_Blocked_GapR(map_gapr, brute_gapr_flag);
 
+		synced_x_file << t << "\t";
+		for(int i = 0; i < allx.size(); i++)
+		{
+			synced_x_file << allx[i] << "\t";
+		}
+		synced_x_file << "\n";
+
+		synced_sigma_file << t << "\t";
+		for(int i = 0; i < Sigma.size(); i++)
+		{
+			synced_sigma_file << Sigma[i] << "\t";
+		}
+		synced_sigma_file << "\n";
+
+		synced_segments_file << t << "\t";
+		for(int i = 0; i < Segments.size(); i++)
+		{
+			synced_segments_file << Segments[i] << "\t";
+		}
+		synced_segments_file << "\n";
+
+		sua_file << t << "\t" << s_R << "\t" << s_G << "\t" << s_eR << "\n";
+
 		for(int i = 0; i < numgenes; i++)
 		{
 			TSS_spotsigma[i] = Get_Spot_Sigma(Segments, Sigma, TSSes[i]);
@@ -1605,29 +1628,6 @@ void Gillespie_Simulation_Multiple_Genes(double force, int restartflag, int brut
 
 //		event_file << t << " "  << event << " " << Nucl.size() << " " << Barr.size() << "\n";
 		event_file << t << " "  << event << "\n";
-
-		synced_x_file << t << "\t";
-		for(int i = 0; i < allx.size(); i++)
-		{
-			synced_x_file << allx[i] << "\t";
-		}
-		synced_x_file << "\n";
-
-		synced_sigma_file << t << "\t";
-		for(int i = 0; i < Sigma.size(); i++)
-		{
-			synced_sigma_file << Sigma[i] << "\t";
-		}
-		synced_sigma_file << "\n";
-
-		synced_segments_file << t << "\t";
-		for(int i = 0; i < Segments.size(); i++)
-		{
-			synced_segments_file << Segments[i] << "\t";
-		}
-		synced_segments_file << "\n";
-
-		sua_file << t << "\t" << s_R << "\t" << s_G << "\t" << s_eR << "\n";
 
 		if(t - last_write_time > write_interval)
 		{
