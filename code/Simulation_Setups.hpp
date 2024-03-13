@@ -523,7 +523,7 @@ void Gillespie_Simulation_Multiple_Genes(double force, int restartflag, int brut
 
 	int exitflag = 0;
 
-	std::ofstream alive_file, x_file, phi_file, velocity_file, angular_v_file, segments_file, sigma_file, torque_file, nucl_status_file, barr_status_file, barr_phi_file, nucl_pos_file, barr_pos_file, event_file, gapr_pos_file, gapr_file, nucl_type_file, rnap_density_file, rnap_segments_pos_file, spot_sigma_file, myong_file, sua_file, synced_x_file, synced_sigma_file, synced_segments_file;
+	std::ofstream alive_file, x_file, phi_file, velocity_file, angular_v_file, segments_file, sigma_file, torque_file, nucl_status_file, barr_status_file, barr_phi_file, nucl_pos_file, barr_pos_file, event_file, gapr_pos_file, gapr_file, nucl_type_file, rnap_density_file, rnap_segments_pos_file, spot_sigma_file, myong_file, sua_file, synced_x_file, synced_sigma_file, synced_segments_file, sua_traj_file;
 
 	event_file.open(outputfolder + "/event_" + std::to_string(world_rank) + ".log");
 
@@ -545,6 +545,7 @@ void Gillespie_Simulation_Multiple_Genes(double force, int restartflag, int brut
 		synced_x_file.open(outputfolder + "/synced_x_" + std::to_string(world_rank) + ".log");
 		synced_sigma_file.open(outputfolder + "/synced_sigma_" + std::to_string(world_rank) + ".log");
 		synced_segments_file.open(outputfolder + "/synced_segments_" + std::to_string(world_rank) + ".log");
+		sua_traj_file.open(outputfolder + "/sua_traj_" + std::to_string(world_rank) + ".log");
 	}
 	sua_file.open(outputfolder + "/sua_" + std::to_string(world_rank) + ".log");
 	if(restartflag == 0 && world_rank == 0)
@@ -846,7 +847,7 @@ void Gillespie_Simulation_Multiple_Genes(double force, int restartflag, int brut
 		else if(s_R == 1)
 		{
 			R[numgenes + 2 + 2*Nucl.size() + numgenes + 2*Barr.size() + 2*GapR_Points.size()] = 0.0;
-			R[numgenes + 2 + 2*Nucl.size() + numgenes + 2*Barr.size() + 2*GapR_Points.size() + 1] = s_R*(k_off_R*(1.0 - s_G) + s_G*k_off_eR);
+			R[numgenes + 2 + 2*Nucl.size() + numgenes + 2*Barr.size() + 2*GapR_Points.size() + 1] = s_R*(k_off_R*(1.0 - s_G - s_eR + s_G*s_eR) + s_G*k_off_eR);
 		}
 		else
 		{
@@ -1113,6 +1114,7 @@ void Gillespie_Simulation_Multiple_Genes(double force, int restartflag, int brut
 					Write_Vector_State_To_File<int>(&barr_status_file, t0, Barr_Status, Barr.size(), 0);
 					Write_Vector_State_To_File<double>(&barr_phi_file, t0, Barr_Phi, Barr.size(), 0);
 					myong_file << t0 << "\t" << Get_Spot_Sigma(Segments, Sigma, TSSes[0] + GQ_spacer) << "\t" << System.s_R << "\t" << System.s_G << "\t" << System.s_eR << "\t" << k_on[0]*Marenduzzo_Func(Get_Spot_Sigma(Segments, Sigma, TSSes[0])) << "\n";
+					sua_traj_file << t0 << "\t" << s_R << "\t" << s_G << "\t" << s_eR << "\n";
 
 					// Writing ends
 
@@ -1280,7 +1282,7 @@ void Gillespie_Simulation_Multiple_Genes(double force, int restartflag, int brut
 		else if(s_R == 1)
 		{
 			R[numgenes + 2 + 2*Nucl.size() + numgenes + 2*Barr.size() + 2*GapR_Points.size()] = 0.0;
-			R[numgenes + 2 + 2*Nucl.size() + numgenes + 2*Barr.size() + 2*GapR_Points.size() + 1] = s_R*(k_off_R*(1.0 - s_G) + s_G*k_off_eR);
+			R[numgenes + 2 + 2*Nucl.size() + numgenes + 2*Barr.size() + 2*GapR_Points.size() + 1] = s_R*(k_off_R*(1.0 - s_G - s_eR + s_G*s_eR) + s_G*k_off_eR);
 		}
 		else
 		{
@@ -1848,6 +1850,7 @@ void Gillespie_Simulation_Multiple_Genes(double force, int restartflag, int brut
 	synced_x_file.close();
 	synced_sigma_file.close();
 	synced_segments_file.close();
+	sua_traj_file.close();
 
 	return;
 }
